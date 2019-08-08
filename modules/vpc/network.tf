@@ -12,7 +12,7 @@ resource "aws_vpc" "main" {
 # Subnets
 resource "aws_subnet" "main-public-1" {
   vpc_id                  = aws_vpc.main.id
-  cidr_block              = "10.0.1.0/20"
+  cidr_block              = "${var.public_subnet_cidr}"
   map_public_ip_on_launch = "true"
   availability_zone       = "eu-west-1a"
 
@@ -24,16 +24,16 @@ resource "aws_subnet" "main-public-1" {
 
 
 
-resource "aws_subnet" "main-private-1" {
-  vpc_id                  = aws_vpc.main.id
-  cidr_block              = "10.0.4.0/20"
-  map_public_ip_on_launch = "false"
-  availability_zone       = "eu-west-1a"
+// resource "aws_subnet" "main-private-1" {
+//   vpc_id                  = aws_vpc.main.id
+//   cidr_block              = "${var.private_subnet_cidr}"
+//   map_public_ip_on_launch = "false"
+//   availability_zone       = "eu-west-1a"
 
-  tags = {
-    Name = "main-private-1"
-  }
-}
+//   tags = {
+//     Name = "main-private-1"
+//   }
+// }
 
 
 # Internet GW
@@ -108,9 +108,9 @@ output "main-public-1_subnet_id" {
   value = "${aws_subnet.main-public-1.id}"
 }
 
-output "main-private-1_subnet_id" {
-  value = "${aws_subnet.main-private-1.id}"
-}
+// output "main-private-1_subnet_id" {
+//   value = "${aws_subnet.main-private-1.id}"
+// }
 
 output "vpc_security_group_ids" {
   value = "${aws_security_group.nat.id}"
