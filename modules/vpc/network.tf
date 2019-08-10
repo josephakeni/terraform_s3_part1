@@ -1,3 +1,6 @@
+############################################
+#           VPC                            #
+############################################
 resource "aws_vpc" "main" {
   cidr_block       = "${var.vpc_cidr}"
   instance_tenancy = "${var.tenancy}"
@@ -9,7 +12,10 @@ resource "aws_vpc" "main" {
 }
 
 
-# Subnets
+
+############################################
+#           SUBNETS                        #
+############################################
 resource "aws_subnet" "main-public-1" {
   vpc_id                  = aws_vpc.main.id
   cidr_block              = "${var.public_subnet_cidr}"
@@ -20,8 +26,6 @@ resource "aws_subnet" "main-public-1" {
     Name = "main-public-1"
   }
 }
-
-
 
 
 resource "aws_subnet" "main-private-1" {
@@ -35,8 +39,9 @@ resource "aws_subnet" "main-private-1" {
   }
 }
 
-
-# Internet GW
+############################################
+#           INTERNET GATEWAY               #
+############################################
 resource "aws_internet_gateway" "main-gw" {
   vpc_id = aws_vpc.main.id
 
@@ -65,12 +70,27 @@ resource "aws_route_table_association" "main-public-1-a" {
 }
 
 
-/*
-  NAT Instance
-*/
+
+############################################
+#           NAT SECURITY GROUP             #
+############################################
 resource "aws_security_group" "nat" {
     name = "vpc_nat"
     description = "Allow traffic to pass from the private subnet to the internet"
+
+    ingress {
+        from_port = 80
+        to_port = 80
+        protocol = "tcp"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+
+    ingress {
+        from_port = 8080
+        to_port = 8080
+        protocol = "tcp"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
 
     ingress {
         from_port = 22
@@ -99,7 +119,9 @@ resource "aws_security_group" "nat" {
 }
 
 
-
+############################################
+#           RESOURCE OUTPUT                #
+############################################
 output "vpc_id" {
   value = "${aws_vpc.main.id}"
 }
@@ -116,3 +138,14 @@ output "vpc_security_group_ids" {
   value = "${aws_security_group.nat.id}"
 }
 
+output "main-gw_id_id" {
+  value = "${aws_internet_gateway.main-gw.id}"
+}
+
+output "main-public_route_table_id" {
+  value = "${aws_route_table.main-public.id}"
+}
+
+output "main-public_route_table_association_id" {
+  value = "${aws_route_table_association.main-public-1-a.id}"
+}
