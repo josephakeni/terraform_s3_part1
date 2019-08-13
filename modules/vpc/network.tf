@@ -11,8 +11,6 @@ resource "aws_vpc" "main" {
   }
 }
 
-
-
 ############################################
 #           SUBNETS                        #
 ############################################
@@ -26,7 +24,6 @@ resource "aws_subnet" "main-public-1" {
     Name = "main-public-1"
   }
 }
-
 
 resource "aws_subnet" "main-private-1" {
   vpc_id                  = aws_vpc.main.id
@@ -54,7 +51,13 @@ resource "aws_internet_gateway" "main-gw" {
 resource "aws_route_table" "main-public" {
   vpc_id = aws_vpc.main.id
   route {
+    /* IP routing is destination based. 
+    The destination must be an IP prefix in CIDR notaion e.g 0.0.0.0/0 */
+    # cidr_block = Destionation.
     cidr_block = "0.0.0.0/0"
+    /* The target must be an AWS network resource such as 
+    internet gateway or Elastic Network Interface */
+    # gateway_id= Target
     gateway_id = aws_internet_gateway.main-gw.id
   }
 
@@ -63,7 +66,13 @@ resource "aws_route_table" "main-public" {
   }
 }
 
-# route associations public
+####################################
+#  ROUTE TABLE ASSOCIATION PUBLIC  #
+####################################
+/*
+If you do not explicitly associate a subnet with a route table 
+you created, AWS will implicitly associate it with the main route table
+*/
 resource "aws_route_table_association" "main-public-1-a" {
   subnet_id      = aws_subnet.main-public-1.id
   route_table_id = aws_route_table.main-public.id
