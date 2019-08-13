@@ -5,11 +5,10 @@ provider "aws" {
 
 module "my_vpc" {
   source   = "../modules/vpc"
-  vpc_cidr = "10.0.0.0/20"
-  tenancy  = "default"
+  vpc_cidr = "${var.vpc_cidr}"
+  tenancy  = "${var.tenancy}"
   vpc_id   = "${module.my_vpc.vpc_id}"
-  //aws_instance = "${module.my_vpc.instance}"
-  subnet_cidr = "10.0.1.0/28"
+  subnet_cidr = "${var.subnet_cidr}"
 }
 
 
